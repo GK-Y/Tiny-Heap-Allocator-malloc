@@ -66,6 +66,7 @@ void split_block(block_meta_t* free_block, int size){
     
     // Insertion (Link new block into the list)
     (free_block->next)->prev = block; //next block's prev points to new block
+    block->next = free_block->next; //block's next is free block's next
     block->prev = free_block; //block's prev points to free
     free_block->next = block;
     
