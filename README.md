@@ -1,4 +1,4 @@
-## Tiny Heap Allocator
+## Tiny Heap Allocator (talloc())
 ---
 
 ```
@@ -21,7 +21,8 @@ A tiny heap allocator like malloc() made with C for learning purpose.
 ---
 
 ### Resource followed:
-[Danluu](https://danluu.com/malloc-tutorial/)
+- [Danluu](https://danluu.com/malloc-tutorial/)
+
 ---
 
 ### Features :
