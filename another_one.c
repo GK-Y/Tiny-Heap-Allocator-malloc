@@ -11,7 +11,7 @@
 //it also thinks its the only free cuz we wont be easily able to check the brevious meta block for coalesincg but would be easy if there were bi directional traversal
 
 typedef struct meta_block{
-    size_t size;
+    int size;
     struct meta_block *next;
     struct meta_block *prev;
     int free;
@@ -19,7 +19,7 @@ typedef struct meta_block{
 } block_meta_t;
 
 #define META_SIZE sizeof(block_meta_t)
-void* head = NULL;
+block_meta_t* head = NULL;
 
 // Request space from the OS
 block_meta_t *request_space(block_meta_t* last, int size){
@@ -129,13 +129,89 @@ void free_mlc(void* block){
     meta_block->free = 1;
     meta_block->debug = 777;
 
-    // TODO: Coalescing logic goes here
+    //coalescing
+    //we will merge the adjacent free of current free block into one big block
+    
+    //we need to do proper null check cuz free can be head or tail so the next or prev may not exsist
+    //or the next next can also not exsist
+    block_meta_t* prev_meta = meta_block->prev;
+    block_meta_t* next_meta = meta_block->next;
+    
+    //if prev is free then allow overwrtiting in current new free i.e. remove current meta from meta linked list
+    //we already have the value of next meta so we can safely remove it
+    //also we shd check if next meta exsits and prev meta exsists
+    if(prev_meta){
+        //do not check both nulll and free else null_> free will give segfault
+        if(prev_meta->free){ 
+            //if next meta exsists 
+            if(next_meta){
+                if(next_meta->free){
+
+                    //first increase size of prev by current free and next free
+                    prev_meta->size += 2*META_SIZE + meta_block->size + next_meta->size;
+
+                    //we check if next exsists for next_meta block
+                    if(next_meta->next){
+                        prev_meta->next = next_meta->next;
+                        (next_meta->next)->prev = prev_meta;
+                        }else{
+                            prev_meta->next = NULL;
+                        }
+                
+                    return; //triple merge finished
+                }
+
+                }
+            }
+
+            //if only current and prev meta free and exsists
+            prev_meta->size += META_SIZE + meta_block->size;
+            prev_meta->next = next_meta;
+            if(next_meta) next_meta->prev = prev_meta; //if next meta exsists but isnt free we also check its exsistence
+            return;
+        }
+
+
+    //if only current and next meta free then remove next meta i.e. expand current meta
+    //incase next meta is null else we get a seg fault
+    if(next_meta){
+        if(next_meta->free){
+            meta_block->size += META_SIZE + next_meta->size;
+
+            meta_block->next = next_meta->next;
+            if((next_meta->next)) //if next_meta's next exsists
+            (next_meta->next)->prev = meta_block;
+        }
+    }
+
 }
 
+void print_meta(){
+    block_meta_t* current = head;
+    while(current){
+        printf("(size:%d free:%d) -> ",current->size,current->free);
+        current = current->next; 
+    }
+    printf("END\n");
+}
 
 int main(int argc, char* argv[]) {
     
+    int n = 7;
+    int* p = (int*)mlc(n*4);
     
+    n = 20;
+    int* q = (int*)mlc(n*4);
+
+    n = 1;
+    int* r = (int*)mlc(n*4);
+    free_mlc(r);
+    print_meta();
+
+    n = 5;
+    int* s = (int*)mlc(n*4);
+    free_mlc(s);
+    print_meta();
 
     printf("\n");
 
