@@ -56,7 +56,9 @@ block_meta_t *search_free(block_meta_t **last, int size){
 }
 
 // Split a large free block into two
+// Split a large free block into two
 void split_block(block_meta_t* free_block, int size){
+    printf("Splitting block...\n");
     block_meta_t* block;
     
     int remaing_size = free_block->size - size;
@@ -65,7 +67,9 @@ void split_block(block_meta_t* free_block, int size){
     block = (block_meta_t*)((char *)free_block + META_SIZE + size); 
     
     // Insertion (Link new block into the list)
-    (free_block->next)->prev = block; //next block's prev points to new block
+    if(free_block->next){
+    (free_block->next)->prev = block; //next block's prev points to new block only when free-block->next aint null i.e. not the last block
+    }
     block->next = free_block->next; //block's next is free block's next
     block->prev = free_block; //block's prev points to free
     free_block->next = block;
@@ -78,6 +82,7 @@ void split_block(block_meta_t* free_block, int size){
     // Update original block's size
     free_block->size = size;
 }
+
 
 // Custom malloc
 void* mlc(int size){
@@ -127,8 +132,11 @@ void free_mlc(void* block){
     // TODO: Coalescing logic goes here
 }
 
-/*
-int main(...) {
-    // Your test code here
+
+int main(int argc, char* argv[]) {
+    
+
+
+
+    return 0;
 }
-*/
