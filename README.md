@@ -16,7 +16,7 @@
     \___)=(___/
 ```
 
-```
+
 A tiny heap allocator like malloc() made with C for learning purpose.
 ---
 
