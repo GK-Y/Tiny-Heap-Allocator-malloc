@@ -159,10 +159,9 @@ void free_mlc(void* block){
                         }
                 
                     return; //triple merge finished
-                }
+                    }
 
                 }
-            }
 
             //if only current and prev meta free and exsists
             prev_meta->size += META_SIZE + meta_block->size;
@@ -170,6 +169,7 @@ void free_mlc(void* block){
             if(next_meta) next_meta->prev = prev_meta; //if next meta exsists but isnt free we also check its exsistence
             return;
         }
+    }
 
 
     //if only current and next meta free then remove next meta i.e. expand current meta
@@ -197,19 +197,23 @@ void print_meta(){
 
 int main(int argc, char* argv[]) {
     
-    int n = 7;
+    printf("META_SIZE:%ld\n",META_SIZE);
+    int n = 2;
     int* p = (int*)mlc(n*4);
     
     n = 20;
     int* q = (int*)mlc(n*4);
+    print_meta();
+
 
     n = 1;
     int* r = (int*)mlc(n*4);
+    print_meta();
     free_mlc(r);
     print_meta();
-
     n = 5;
     int* s = (int*)mlc(n*4);
+    print_meta();
     free_mlc(s);
     print_meta();
 
